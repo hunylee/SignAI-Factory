@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignAI-Factory - 수어 데이터 공모전</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">🤟 SignAI-Factory</div>
+        <nav>
+            <a href="index.html">홈</a>
+            <a href="#" onclick="scrollToTasks()">공모전</a>
+            <button>로그인</button>
+        </nav>
+    </header>
+
+    <section class="hero-banner">
+        <h1>당신의 수어, AI의 미래가 됩니다</h1>
+        <p>지금 공모전에 참여하고 상금에 도전하세요!</p>
+        <button onclick="scrollToTasks()">참여하러 가기 ></button>
+    </section>
+
+    <section class="task-list" id="task-list">
+        <h2>🏆 진행 중인 공모전</h2>
+        <div class="card-container">
+            <!-- API에서 동적으로 로드됨 -->
+            <p>불러오는 중...</p>
+        </div>
+    </section>
+
+    <script src="js/api.js"></script>
+    <script>
+        // 페이지 로드 시 공모전 목록 가져오기
+        document.addEventListener('DOMContentLoaded', () => {
+            renderCompetitions();
+        });
+
+        // 공모전 섹션으로 스크롤
+        function scrollToTasks() {
+            document.getElementById('task-list').scrollIntoView({
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+
+</html>

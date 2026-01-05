@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>공모전 상세 - SignAI-Factory</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <div class="logo">🤟 SignAI-Factory</div>
+        <nav><a href="index.html">← 목록으로</a></nav>
+    </header>
+
+    <div class="container">
+        <div id="competition-header">
+            <h2>불러오는 중...</h2>
+        </div>
+
+        <div class="workspace">
+
+            <div class="video-section">
+                <h3>STEP 1. 따라해 보세요</h3>
+                <div class="video-frame" id="video-container">
+                    <p style="padding: 40px; text-align: center;">영상 불러오는 중...</p>
+                </div>
+                <p>💡 Tip. 위 영상을 보고 정확한 손동작으로 촬영해주세요.</p>
+            </div>
+
+            <div class="upload-section">
+                <h3>STEP 2. 영상 제출하기</h3>
+                <form class="upload-box" id="submit-form">
+                    <div class="drop-zone" id="drop-zone">
+                        📂<br>여기에 촬영한 파일을 놓으세요
+                        <input type="file" id="file-input" accept="video/*" style="display: none;">
+                    </div>
+                    <p id="file-name" style="color: #667eea; margin-bottom: 10px;"></p>
+                    <label>
+                        <input type="checkbox" id="consent" required>
+                        (필수) AI 학습용 데이터 사용에 동의합니다.
+                    </label>
+                    <button type="submit" class="submit-btn">제출하기</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="competition-info" id="competition-info"
+            style="margin-top: 30px; padding: 20px; background: white; border-radius: 12px;">
+            <!-- 공모전 정보가 여기 표시됩니다 -->
+        </div>
+    </div>
+
+    <script src="js/api.js"></script>
+    <script>
+        let currentCompetition = null;
+
+        // 페이지 로드 시 공모전 정보 가져오기
+        document.addEventListener('DOMContentLoaded', async () => {
+            const competitionId = getUrlParam('id') || 1;
+            await loadCompetition(competitionId);
+            setupFileUpload();
+        });
+
+        // 공모전 정보 로드
+        async function loadCompetition(id) {
+            currentCompetition = await fetchCompetition(id);
+
+            if (!currentCompetition) {
+                document.getElementById('competition-header').innerHTML =
+                    '<h2>공모전을 찾을 수 없습니다.</h2>';
+                return;
+            }
+
+            // 제목 표시
+            document.getElementById('competition-header').innerHTML = `
+                <h2>${currentCompetition.title}</h2>
+                <p style="color: #667eea; font-weight: 600;">
+                    🏆 상금 ${currentCompetition.prize_amount} | 
+                    📊 달성률 ${currentCompetition.progress}% 
+                    (${currentCompetition.current_count.toLocaleString()}/${currentCompetition.target_count.toLocaleString()}건)
+                </p>
+            `;
+
+            // 유튜브 영상 표시
+            if (currentCompetition.youtube_url) {
+                document.getElementById('video-container').innerHTML = `
+                    <iframe width="100%" height="315" 
+                        src="${currentCompetition.youtube_url}"
+                        title="수어 가이드 영상" frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen>
+                    </iframe>
+                `;
+            }
+
+            // 공모전 정보 표시
+            const deadline = new Date(currentCompetition.deadline);
+            const daysLeft = Math.max(0, Math.ceil((deadline - new Date()) / (1000 * 60 * 60 * 24)));
+
+            document.getElementById('competition-info').innerHTML = `
+                <h3 style="margin-bottom: 15px;">📋 공모전 정보</h3>
+                <p><strong>설명:</strong> ${currentCompetition.description || '설명이 없습니다.'}</p>
+                <p><strong>마감일:</strong> ${deadline.toLocaleDateString('ko-KR')} (D-${daysLeft})</p>
+                <p><strong>상태:</strong> ${currentCompetition.status === 'open' ? '✅ 접수중' : '❌ 마감'}</p>
+            `;
+        }
+
+        // 파일 업로드 설정
+        function setupFileUpload() {
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('file-input');
+            const form = document.getElementById('submit-form');
+
+            // 클릭으로 파일 선택
+            dropZone.addEventListener('click', () => fileInput.click());
+
+            // 드래그 앤 드롭
+            dropZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '#667eea';
+                dropZone.style.background = 'rgba(102, 126, 234, 0.1)';
+            });
+
+            dropZone.addEventListener('dragleave', () => {
+                dropZone.style.borderColor = '';
+                dropZone.style.background = '';
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.style.borderColor = '';
+                dropZone.style.background = '';
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    showFileName(files[0].name);
+                }
+            });
+
+            // 파일 선택 시
+            fileInput.addEventListener('change', () => {
+                if (fileInput.files.length > 0) {
+                    showFileName(fileInput.files[0].name);
+                }
+            });
+
+            // 폼 제출
+            form.addEventListener('submit', handleSubmit);
+        }
+
+        function showFileName(name) {
+            document.getElementById('file-name').textContent = `📹 선택된 파일: ${name}`;
+        }
+
+        // 제출 처리
+        async function handleSubmit(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('file-input');
+            const consent = document.getElementById('consent');
+
+            if (!fileInput.files.length) {
+                alert('파일을 선택해주세요.');
+                return;
+            }
+
+            if (!consent.checked) {
+                alert('데이터 사용 동의가 필요합니다.');
+                return;
+            }
+
+            const result = await submitData({
+                competition_id: currentCompetition.id,
+                file_name: fileInput.files[0].name,
+                file_path: `/uploads/${fileInput.files[0].name}`
+            });
+
+            if (result.success) {
+                alert('🎉 ' + result.message);
+                // 페이지 새로고침하여 진행률 업데이트
+                location.reload();
+            } else {
+                alert('❌ ' + result.error);
+            }
+        }
+    </script>
+</body>
+
+</html>

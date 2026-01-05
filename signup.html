@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - SignAI-Factory</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .signup-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+        }
+
+        .signup-box {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        .signup-box h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+
+        .signup-box p.subtitle {
+            text-align: center;
+            color: #636e72;
+            margin-bottom: 30px;
+        }
+
+        /* 소셜 로그인 버튼 */
+        .social-login {
+            margin-bottom: 25px;
+        }
+
+        .social-btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .social-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .social-btn.google {
+            background: #ffffff;
+            border: 2px solid #e8e8e8;
+            color: #333;
+        }
+
+        .social-btn.google:hover {
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .social-btn.naver {
+            background: #03C75A;
+            color: white;
+        }
+
+        .social-btn.naver:hover {
+            box-shadow: 0 4px 15px rgba(3, 199, 90, 0.4);
+        }
+
+        .social-btn.kakao {
+            background: #FEE500;
+            color: #191919;
+        }
+
+        .social-btn.kakao:hover {
+            box-shadow: 0 4px 15px rgba(254, 229, 0, 0.5);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 25px 0;
+            color: #b2bec3;
+            font-size: 14px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background: #e8e8e8;
+        }
+
+        .divider span {
+            padding: 0 15px;
+        }
+
+        .signup-box .form-group {
+            margin-bottom: 18px;
+        }
+
+        .signup-box label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3436;
+        }
+
+        .signup-box input {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #e8e8e8;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+
+        .signup-box input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .signup-box .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        .signup-box .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(0, 184, 148, 0.4);
+        }
+
+        .error-message {
+            background: #ffe6e6;
+            color: #e74c3c;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .success-message {
+            background: #e6ffed;
+            color: #00b894;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .login-link {
+            display: block;
+            text-align: center;
+            margin-top: 20px;
+            color: #636e72;
+            font-size: 14px;
+        }
+
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .login-link a:hover {
+            text-decoration: underline;
+        }
+
+        .password-hint {
+            font-size: 12px;
+            color: #b2bec3;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="signup-container">
+        <div class="signup-box">
+            <h1>🤟 회원가입</h1>
+            <p class="subtitle">SignAI-Factory에 가입하고 수어 데이터 수집에 참여하세요!</p>
+
+            <!-- 소셜 로그인 버튼 -->
+            <div class="social-login">
+                <button class="social-btn google" onclick="socialLogin('google')">
+                    <svg width="22" height="22" viewBox="0 0 24 24">
+                        <path fill="#4285F4"
+                            d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
+                        <path fill="#34A853"
+                            d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />
+                        <path fill="#FBBC05"
+                            d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" />
+                        <path fill="#EA4335"
+                            d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" />
+                    </svg>
+                    Google로 가입하기
+                </button>
+
+                <button class="social-btn naver" onclick="socialLogin('naver')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                        <path d="M16.273 12.845L7.376 0H0v24h7.727V11.155L16.624 24H24V0h-7.727z" />
+                    </svg>
+                    네이버로 가입하기
+                </button>
+
+                <button class="social-btn kakao" onclick="socialLogin('kakao')">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="#191919">
+                        <path
+                            d="M12 3C6.477 3 2 6.477 2 10.5c0 2.47 1.607 4.647 4.023 5.9-.158.572-.512 2.07-.587 2.39-.093.404.148.398.312.29.129-.086 2.052-1.39 2.883-1.955.449.065.91.1 1.369.1 5.523 0 10-3.477 10-7.725C22 6.477 17.523 3 12 3z" />
+                    </svg>
+                    카카오로 가입하기
+                </button>
+            </div>
+
+            <div class="divider"><span>또는 이메일로 가입</span></div>
+
+            <div class="error-message" id="error-message"></div>
+            <div class="success-message" id="success-message"></div>
+
+            <form id="signup-form">
+                <div class="form-group">
+                    <label>이름</label>
+                    <input type="text" id="name" placeholder="홍길동" required>
+                </div>
+
+                <div class="form-group">
+                    <label>이메일</label>
+                    <input type="email" id="email" placeholder="example@email.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label>비밀번호</label>
+                    <input type="password" id="password" placeholder="비밀번호 입력" required minlength="6">
+                    <p class="password-hint">6자 이상 입력해주세요</p>
+                </div>
+
+                <div class="form-group">
+                    <label>비밀번호 확인</label>
+                    <input type="password" id="password-confirm" placeholder="비밀번호 다시 입력" required>
+                </div>
+
+                <button type="submit" class="submit-btn">가입하기</button>
+            </form>
+
+            <p class="login-link">
+                이미 계정이 있으신가요? <a href="/login.html">로그인</a>
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 이미 로그인되어 있으면 메인으로 이동
+        if (localStorage.getItem('adminToken')) {
+            window.location.href = '/';
+        }
+
+        // 소셜 로그인 처리
+        function socialLogin(provider) {
+            const isConfigured = false;
+
+            if (!isConfigured) {
+                alert(`⚙️ ${provider.toUpperCase()} 가입 준비 중입니다.\n\nAPI 키 설정 후 사용 가능합니다.`);
+                return;
+            }
+
+            window.location.href = `/api/auth/${provider}`;
+        }
+
+        // 회원가입 폼 처리
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const name = document.getElementById('name').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('password-confirm').value;
+            const errorDiv = document.getElementById('error-message');
+            const successDiv = document.getElementById('success-message');
+
+            // 초기화
+            errorDiv.style.display = 'none';
+            successDiv.style.display = 'none';
+
+            // 비밀번호 확인
+            if (password !== passwordConfirm) {
+                errorDiv.textContent = '비밀번호가 일치하지 않습니다.';
+                errorDiv.style.display = 'block';
+                return;
+            }
+
+            try {
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // 토큰 저장
+                    localStorage.setItem('adminToken', data.token);
+                    localStorage.setItem('adminUser', JSON.stringify(data.user));
+
+                    successDiv.textContent = '🎉 회원가입 완료! 잠시 후 메인 페이지로 이동합니다.';
+                    successDiv.style.display = 'block';
+
+                    // 2초 후 메인으로 이동
+                    setTimeout(() => {
+                        window.location.href = '/';
+                    }, 2000);
+                } else {
+                    errorDiv.textContent = data.error;
+                    errorDiv.style.display = 'block';
+                }
+            } catch (err) {
+                errorDiv.textContent = '서버 연결에 실패했습니다.';
+                errorDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+
+</html>

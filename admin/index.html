@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>관리자 페이지 - SignAI-Factory</title>
+    <link rel="stylesheet" href="../style.css">
+</head>
+
+<body>
+    <header style="background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);">
+        <div class="logo" style="-webkit-text-fill-color: white;">⚙️ 관리자 모드</div>
+        <nav><a href="/" style="color: white;">← 메인으로 가기</a></nav>
+    </header>
+
+    <div class="container">
+        <h2>📝 새로운 공모전 등록</h2>
+
+        <form class="admin-form" id="competition-form">
+            <div class="form-group">
+                <label>공모전 제목 *</label>
+                <input type="text" id="title" placeholder="예: 공항 수어 데이터 수집" required>
+            </div>
+
+            <div class="form-group">
+                <label>설명</label>
+                <textarea id="description" rows="3" placeholder="공모전에 대한 설명을 입력하세요."
+                    style="width: 100%; padding: 14px 16px; border: 2px solid #e8e8e8; border-radius: 10px; font-size: 15px; resize: vertical;"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>상금 금액 *</label>
+                <input type="text" id="prize" placeholder="예: 300만원" required>
+            </div>
+
+            <div class="form-group">
+                <label>참조할 유튜브 링크 (URL)</label>
+                <input type="text" id="youtube" placeholder="https://www.youtube.com/embed/...">
+                <p class="small-text">* embed 형식 URL을 사용하세요 (예: https://www.youtube.com/embed/VIDEO_ID)</p>
+            </div>
+
+            <div class="form-group">
+                <label>목표 수집 건수</label>
+                <input type="number" id="target" placeholder="예: 1000" value="1000">
+            </div>
+
+            <div class="form-group">
+                <label>마감일 *</label>
+                <input type="date" id="deadline" required>
+            </div>
+
+            <button type="submit" class="submit-btn">🚀 공모전 게시하기</button>
+        </form>
+
+        <hr style="margin: 40px 0; border: 1px solid #e8e8e8;">
+
+        <h2>📋 등록된 공모전 목록</h2>
+        <div id="competition-list" class="card-container" style="flex-direction: column;">
+            <p>불러오는 중...</p>
+        </div>
+    </div>
+
+    <script src="../js/api.js"></script>
+    <script>
+        // 인증 확인
+        function checkAuth() {
+            const token = localStorage.getItem('adminToken');
+            const user = JSON.parse(localStorage.getItem('adminUser') || 'null');
+
+            if (!token || !user || user.role !== 'admin') {
+                alert('🔐 관리자 로그인이 필요합니다.');
+                window.location.href = '/login.html';
+                return false;
+            }
+            return true;
+        }
+
+        // 로그아웃
+        function logout() {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            alert('로그아웃되었습니다.');
+            window.location.href = '/';
+        }
+
+        // 페이지 로드 시 인증 확인 후 공모전 목록 가져오기
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!checkAuth()) return;
+
+            // 로그아웃 버튼 추가
+            const nav = document.querySelector('nav');
+            nav.innerHTML = `
+                <span style="color: #ffeaa7;">👤 ${JSON.parse(localStorage.getItem('adminUser')).name}</span>
+                <a href="/" style="color: white;">메인</a>
+                <a href="#" onclick="logout()" style="color: #ff7675;">로그아웃</a>
+            `;
+
+            loadCompetitionList();
+            setDefaultDeadline();
+        });
+
+        // 기본 마감일 설정 (30일 후)
+        function setDefaultDeadline() {
+            const defaultDate = new Date();
+            defaultDate.setDate(defaultDate.getDate() + 30);
+            document.getElementById('deadline').value = defaultDate.toISOString().split('T')[0];
+        }
+
+        // 공모전 목록 로드
+        async function loadCompetitionList() {
+            const container = document.getElementById('competition-list');
+            const competitions = await fetchCompetitions();
+
+            if (competitions.length === 0) {
+                container.innerHTML = '<p>등록된 공모전이 없습니다.</p>';
+                return;
+            }
+
+            container.innerHTML = competitions.map(comp => `
+                <div class="card" style="width: 100%; cursor: default;">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div>
+                            <div class="status ${comp.status === 'open' ? '' : 'end'}">
+                                ${comp.status === 'open' ? '진행중' : '마감'}
+                            </div>
+                            <h3>${comp.title}</h3>
+                            <p>목표: ${comp.target_count.toLocaleString()}건 | 현재: ${comp.current_count.toLocaleString()}건 (${comp.progress}%)</p>
+                        </div>
+                        <div class="price">${comp.prize_amount}</div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 폼 제출 처리
+        document.getElementById('competition-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const competitionData = {
+                title: document.getElementById('title').value,
+                description: document.getElementById('description').value,
+                prize_amount: document.getElementById('prize').value,
+                youtube_url: document.getElementById('youtube').value,
+                target_count: parseInt(document.getElementById('target').value) || 1000,
+                deadline: document.getElementById('deadline').value
+            };
+
+            const result = await createCompetition(competitionData);
+
+            if (result.success) {
+                alert('🎉 새로운 공모전이 등록되었습니다!');
+                // 폼 초기화 및 목록 새로고침
+                document.getElementById('competition-form').reset();
+                setDefaultDeadline();
+                loadCompetitionList();
+            } else {
+                alert('❌ 오류: ' + result.error);
+            }
+        });
+    </script>
+</body>
+
+</html>

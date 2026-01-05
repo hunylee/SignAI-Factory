@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>외부 공모전 - SignAI-Factory</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .page-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 20px;
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .page-header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+
+        .page-header p {
+            font-size: 18px;
+            opacity: 0.9;
+        }
+
+        .source-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+        }
+
+        .loading-state {
+            text-align: center;
+            padding: 60px;
+            color: #636e72;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* 2열 그리드 수정 */
+        .crawler-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .external-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+            border: 1px solid #eee;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .external-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        }
+
+        .card-img-wrapper {
+            width: 100%;
+            height: 160px;
+            background: #f1f2f6;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            /* 위비티 이미지는 비율이 다양하므로 contain */
+            background: #fff;
+        }
+
+        .card-body {
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .card-host {
+            font-size: 13px;
+            color: #636e72;
+            margin-bottom: 8px;
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            flex: 1;
+
+            /* 2줄 말줄임 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #f1f2f6;
+            padding-top: 15px;
+            margin-top: auto;
+        }
+
+        .d-day {
+            background: #ffeaa7;
+            color: #d35400;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .source-tag {
+            font-size: 12px;
+            color: #b2bec3;
+        }
+
+        .error-message {
+            text-align: center;
+            padding: 40px;
+            background: #fff0f0;
+            border-radius: 10px;
+            color: #c0392b;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <div class="logo">🤟 SignAI-Factory</div>
+        <nav>
+            <a href="/">홈</a>
+            <a href="/index.html#tasks">공모전</a>
+            <a href="/competitions.html" style="color: #667eea; font-weight: 700;">외부 공모전</a>
+            <a href="/login.html" class="nav-btn">로그인</a>
+            <a href="/signup.html" class="nav-btn signup">회원가입</a>
+        </nav>
+    </header>
+
+    <div class="page-header">
+        <h1>🌐 외부 데이터 공모전</h1>
+        <p>전국의 다양한 AI/데이터 공모전을 실시간으로 확인하세요</p>
+        <div class="source-badge">출처: 위비티 (WEVITY)</div>
+    </div>
+
+    <div class="container">
+        <div id="loading" class="loading-state">
+            <div class="spinner"></div>
+            <p>최신 공모전 정보를 불러오고 있습니다...</p>
+        </div>
+
+        <div id="error" class="error-message" style="display: none;"></div>
+
+        <div id="competition-list" class="crawler-grid">
+            <!-- 자바스크립트로 카드가 여기에 추가됨 -->
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', fetchExternalCompetitions);
+
+        async function fetchExternalCompetitions() {
+            const loading = document.getElementById('loading');
+            const list = document.getElementById('competition-list');
+            const errorDiv = document.getElementById('error');
+
+            try {
+                const response = await fetch('/api/external-competitions');
+                const result = await response.json();
+
+                if (result.success) {
+                    loading.style.display = 'none';
+                    renderCards(result.data);
+                } else {
+                    throw new Error(result.error || '데이터를 불러오는데 실패했습니다.');
+                }
+            } catch (err) {
+                console.error(err);
+                loading.style.display = 'none';
+                errorDiv.innerHTML = `
+                    <h3>😢 죄송합니다</h3>
+                    <p>${err.message}</p>
+                    <button onclick="location.reload()" style="margin-top: 15px; padding: 8px 16px; border:none; background:#667eea; color:white; border-radius:5px; cursor:pointer;">다시 시도</button>
+                `;
+                errorDiv.style.display = 'block';
+            }
+        }
+
+        function renderCards(competitions) {
+            const list = document.getElementById('competition-list');
+
+            if (competitions.length === 0) {
+                list.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">현재 진행 중인 공모전이 없습니다.</p>';
+                return;
+            }
+
+            list.innerHTML = competitions.map(item => `
+                <div class="external-card" onclick="window.open('${item.link}', '_blank')">
+                    <div class="card-img-wrapper">
+                        <img src="${item.image || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${item.title}" onerror="this.src='https://via.placeholder.com/300x200?text=SignAI'">
+                    </div>
+                    <div class="card-body">
+                        <div class="card-host">${item.host || '주최 정보 없음'}</div>
+                        <div class="card-title">${item.title}</div>
+                        <div class="card-footer">
+                            <span class="d-day">${item.dday || 'D-Day'}</span>
+                            <span class="source-tag">Wevity</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+
+</html>

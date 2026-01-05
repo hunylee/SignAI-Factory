@@ -11,6 +11,7 @@ const competitionsRouter = require('./routes/competitions');
 const submissionsRouter = require('./routes/submissions');
 const { router: authRouter } = require('./routes/auth');
 const socialAuthRouter = require('./routes/social-auth');
+const crawlerRouter = require('./routes/crawler');
 
 const app = express();
 
@@ -27,6 +28,7 @@ app.use('/api/auth', authRouter);
 app.use('/api/auth', socialAuthRouter);  // 소셜 로그인
 app.use('/api/competitions', competitionsRouter);
 app.use('/api/submissions', submissionsRouter);
+app.use('/api/external-competitions', crawlerRouter);
 
 // 헬스 체크
 app.get('/api/health', (req, res) => {

@@ -54,6 +54,28 @@ nav a:hover {
     color: #667eea;
 }
 
+/* 네비게이션 버튼 스타일 */
+.nav-btn {
+    padding: 8px 18px;
+    border-radius: 20px;
+    font-size: 14px;
+}
+
+.nav-btn:hover {
+    color: white;
+    background: var(--primary-gradient);
+}
+
+.nav-btn.signup {
+    background: var(--primary-gradient);
+    color: white !important;
+}
+
+.nav-btn.signup:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+}
+
 nav button,
 button {
     cursor: pointer;

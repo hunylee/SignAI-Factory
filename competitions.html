@@ -134,6 +134,26 @@
             overflow: hidden;
         }
 
+        /* 공모전 가져오기 버튼 */
+        .import-btn {
+            width: 100%;
+            margin-top: 10px;
+            padding: 10px;
+            background: #e17055;
+            color: white;
+            border-radius: 8px;
+            font-size: 14px;
+            border: none;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .import-btn:hover {
+            background: #d63031;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(214, 48, 49, 0.3);
+        }
+
         .card-footer {
             display: flex;
             justify-content: space-between;
@@ -230,6 +250,7 @@
 
         function renderCards(competitions) {
             const list = document.getElementById('competition-list');
+            const isAdmin = localStorage.getItem('adminToken') && JSON.parse(localStorage.getItem('adminUser'))?.role === 'admin';
 
             if (competitions.length === 0) {
                 list.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">현재 진행 중인 공모전이 없습니다.</p>';
@@ -244,6 +265,13 @@
                     <div class="card-body">
                         <div class="card-host">${item.host || '주최 정보 없음'}</div>
                         <div class="card-title">${item.title}</div>
+                        
+                        ${isAdmin ? `
+                            <button class="import-btn" onclick="importCompetition(event, '${encodeURIComponent(JSON.stringify(item))}')">
+                                + 공모전 등록
+                            </button>
+                        ` : ''}
+
                         <div class="card-footer">
                             <span class="d-day">${item.dday || 'D-Day'}</span>
                             <span class="source-tag">Wevity</span>
@@ -251,6 +279,17 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        function importCompetition(event, itemString) {
+            event.stopPropagation(); // 카드 클릭 이벤트 전파 방지
+            const item = JSON.parse(decodeURIComponent(itemString));
+
+            if (confirm(`'${item.title}' 공모전을 등록하시겠습니까?`)) {
+                // 데이터 저장 후 관리자 페이지로 이동
+                sessionStorage.setItem('importCompetitionData', JSON.stringify(item));
+                window.location.href = '/admin';
+            }
         }
     </script>
 </body>

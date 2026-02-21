@@ -9,6 +9,8 @@ SignAI-Factory는 수어 학습용 AI 모델을 위한 데이터를 수집하는
 
 ## 🚀 시작하기
 
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2A%2Agithub.com%2Fhunylee%2FSignAI-Factory)
+
 ### 필수 요구사항
 - Node.js 18+
 - PostgreSQL 18+

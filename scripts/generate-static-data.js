@@ -15,7 +15,14 @@ async function generateExternalCompetitions() {
     console.log('Fetching external competitions from Wevity...');
     try {
         const url = 'https://www.wevity.com/?c=find&s=1&gub=1&cidx=20';
-        const response = await axios.get(url);
+        const response = await axios.get(url, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
+                'Referer': 'https://www.google.com/'
+            }
+        });
         const $ = cheerio.load(response.data);
         const competitions = [];
 
@@ -121,8 +128,8 @@ async function generateInternalCompetitions() {
             const compPath = path.join(DATA_DIR, `competition-${comp.id}.json`);
             fs.writeFileSync(compPath, JSON.stringify({ success: true, data: comp }, null, 2));
         });
-        
-        console.log(`✅ Saved internal competitions to ${ outputPath }`);
+
+        console.log(`✅ Saved internal competitions to ${outputPath}`);
 
     } catch (error) {
         console.error('Error generating internal competitions:', error);

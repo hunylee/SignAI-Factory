@@ -11,7 +11,7 @@
 <body>
     <header style="background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);">
         <div class="logo" style="-webkit-text-fill-color: white;">⚙️ 관리자 모드</div>
-        <nav><a href="/" style="color: white;">← 메인으로 가기</a></nav>
+        <nav><a href="../index.html" style="color: white;">← 메인으로 가기</a></nav>
     </header>
 
     <div class="container">
@@ -70,7 +70,7 @@
 
             if (!token || !user || user.role !== 'admin') {
                 alert('🔐 관리자 로그인이 필요합니다.');
-                window.location.href = '/login.html';
+                window.location.href = '../login.html';
                 return false;
             }
             return true;
@@ -81,7 +81,7 @@
             localStorage.removeItem('adminToken');
             localStorage.removeItem('adminUser');
             alert('로그아웃되었습니다.');
-            window.location.href = '/';
+            window.location.href = '../index.html';
         }
 
         // 가져온 공모전 데이터 확인 및 폼 채우기
@@ -116,7 +116,7 @@
             const nav = document.querySelector('nav');
             nav.innerHTML = `
                 <span style="color: #ffeaa7;">👤 ${JSON.parse(localStorage.getItem('adminUser')).name}</span>
-                <a href="/" style="color: white;">메인</a>
+                <a href="../index.html" style="color: white;">메인</a>
                 <a href="#" onclick="logout()" style="color: #ff7675;">로그아웃</a>
             `;
 

@@ -250,9 +250,9 @@
                 <button type="submit" class="submit-btn">로그인</button>
             </form>
 
-            <a href="/" class="back-link">← 메인으로 돌아가기</a>
+            <a href="index.html" class="back-link">← 메인으로 돌아가기</a>
             <p style="text-align: center; margin-top: 15px; color: #636e72; font-size: 14px;">
-                계정이 없으신가요? <a href="/signup.html" style="color: #667eea; font-weight: 600;">회원가입</a>
+                계정이 없으신가요? <a href="signup.html" style="color: #667eea; font-weight: 600;">회원가입</a>
             </p>
         </div>
     </div>
@@ -260,7 +260,7 @@
     <script>
         // 이미 로그인되어 있으면 관리자 페이지로 이동
         if (localStorage.getItem('adminToken')) {
-            window.location.href = '/admin';
+            window.location.href = 'index.html';
         }
 
         // 소셜 로그인 처리
@@ -286,15 +286,12 @@
             const errorDiv = document.getElementById('error-message');
 
             try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ email, password })
-                });
-
-                const data = await response.json();
+                // Mock API call for static GitHub Pages
+                const data = {
+                    success: true,
+                    token: "mock_token_123",
+                    user: { role: email === 'admin@signai.kr' ? 'admin' : 'user', email: email }
+                };
 
                 if (data.success) {
                     // 토큰 저장
@@ -303,8 +300,8 @@
 
                     // 관리자인지 확인
                     if (data.user.role === 'admin') {
-                        alert('🎉 로그인 성공! 관리자 페이지로 이동합니다.');
-                        window.location.href = '/admin';
+                        alert('🎉 로그인 성공! 홈으로 이동합니다. (데모 모드)');
+                        window.location.href = 'index.html';
                     } else {
                         errorDiv.textContent = '관리자 권한이 없습니다.';
                         errorDiv.style.display = 'block';

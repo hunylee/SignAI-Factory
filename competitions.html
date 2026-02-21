@@ -191,11 +191,11 @@
     <header>
         <div class="logo">🤟 SignAI-Factory</div>
         <nav>
-            <a href="/">홈</a>
-            <a href="/index.html#tasks">공모전</a>
-            <a href="/competitions.html" style="color: #667eea; font-weight: 700;">외부 공모전</a>
-            <a href="/login.html" class="nav-btn">로그인</a>
-            <a href="/signup.html" class="nav-btn signup">회원가입</a>
+            <a href="index.html">홈</a>
+            <a href="index.html#tasks">공모전</a>
+            <a href="competitions.html" style="color: #667eea; font-weight: 700;">외부 공모전</a>
+            <a href="login.html" class="nav-btn">로그인</a>
+            <a href="signup.html" class="nav-btn signup">회원가입</a>
         </nav>
     </header>
 
@@ -227,7 +227,7 @@
             const errorDiv = document.getElementById('error');
 
             try {
-                const response = await fetch('/api/external-competitions');
+                const response = await fetch('data/external-competitions.json');
                 const result = await response.json();
 
                 if (result.success) {

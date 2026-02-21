@@ -1,0 +1,17 @@
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "title": "일상생활 인사말 수어 데이터 수집",
+    "description": "안녕하세요, 감사합니다 등 일상 인사말 수어를 수집합니다.",
+    "prize_amount": "500만원",
+    "youtube_url": "https://www.youtube.com/embed/fHI8X4OXluQ",
+    "target_count": 5000,
+    "current_count": 2250,
+    "deadline": "2026-01-19T15:00:00.000Z",
+    "status": "open",
+    "created_at": "2026-01-05T06:42:04.814Z",
+    "progress": 45,
+    "days_left": -32
+  }
+}

@@ -3,12 +3,12 @@
  * 프론트엔드에서 백엔드 API를 호출하는 함수들
  */
 
-const API_BASE = '/api';
+const API_BASE = window.location.pathname.includes('/admin') ? '../data' : 'data';
 
 // 공모전 목록 가져오기
 async function fetchCompetitions() {
     try {
-        const response = await fetch(`${API_BASE}/competitions`);
+        const response = await fetch(`${API_BASE}/competitions.json`);
         const data = await response.json();
 
         if (data.success) {
@@ -26,7 +26,7 @@ async function fetchCompetitions() {
 // 특정 공모전 상세 가져오기
 async function fetchCompetition(id) {
     try {
-        const response = await fetch(`${API_BASE}/competitions/${id}`);
+        const response = await fetch(`${API_BASE}/competition-${id}.json`);
         const data = await response.json();
 
         if (data.success) {
@@ -41,50 +41,14 @@ async function fetchCompetition(id) {
     }
 }
 
-// 새 공모전 생성 (관리자)
 async function createCompetition(competitionData) {
-    try {
-        const response = await fetch(`${API_BASE}/competitions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(competitionData)
-        });
-        const data = await response.json();
-
-        if (data.success) {
-            return { success: true, data: data.data };
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.error('API 호출 오류:', error);
-        return { success: false, error: '서버 연결 실패' };
-    }
+    console.log('[Mocked] createCompetition:', competitionData);
+    return { success: true, data: { ...competitionData, id: Date.now() } };
 }
 
-// 제출물 등록
 async function submitData(submissionData) {
-    try {
-        const response = await fetch(`${API_BASE}/submissions`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(submissionData)
-        });
-        const data = await response.json();
-
-        if (data.success) {
-            return { success: true, message: data.message };
-        } else {
-            return { success: false, error: data.error };
-        }
-    } catch (error) {
-        console.error('API 호출 오류:', error);
-        return { success: false, error: '서버 연결 실패' };
-    }
+    console.log('[Mocked] submitData:', submissionData);
+    return { success: true, message: '성공적으로 제출되었습니다. (GitHub Pages 데모 모드)' };
 }
 
 // 공모전 카드 HTML 생성
